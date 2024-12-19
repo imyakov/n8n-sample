@@ -16,7 +16,8 @@ Open http://localhost:8080
 * Run `Docker-compose up --build` to rebuild the image.
 
 ## Sample workflows
-* Some sample workflows I made that can be imported in n8n from file are located in the `/workflows` folder.
+
+Sample workflows I made that can be imported in n8n from file are located in the `/workflows` folder.
 
 Note: some of these flows require Cohere credentials and FTP server credentials.
 
