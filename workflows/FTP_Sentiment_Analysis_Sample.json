@@ -1,0 +1,273 @@
+{
+  "name": "FTP Sentiment Analysis Sample",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1de11a36-a034-432e-8a1c-19acdfa09366",
+      "name": "Schedule Trigger",
+      "notes": "Triggers the job once a day at midnight"
+    },
+    {
+      "parameters": {
+        "path": "/readme.txt"
+      },
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "f23ecce5-33ff-47b9-b7b4-28e3b7f5c434",
+      "name": "FTP",
+      "credentials": {
+        "ftp": {
+          "id": "Tc9cMQw3j0qJsE39",
+          "name": "FTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "60964fd9-52f0-4ee6-af02-a6624eaa9479",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "command": "=echo -e '{{ $json.data }}' | head -n 1"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "a7660c1a-0595-44cc-b210-e0071e006274",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "d24c8788-bb83-4a65-8ab3-e00d436aebda",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.stdout }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        0
+      ],
+      "id": "1b829885-409b-4838-b2bf-609c808ccf00",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        -120
+      ],
+      "id": "d1dac983-cdec-4353-8749-883311facf30",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        20
+      ],
+      "id": "06348210-8da6-4100-9fd9-df867388b173",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        180
+      ],
+      "id": "ba225e71-9361-4bd4-95d8-48daa9423673",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmCohere",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        220
+      ],
+      "id": "647223a0-033b-4bf6-bad7-db7b459d698a",
+      "name": "Cohere Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "Y3lCGEk4EJqmkdDC",
+          "name": "CohereApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "FTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        []
+      ]
+    },
+    "Cohere Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        []
+      ]
+    },
+    "Code3": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "86627d57-1c4b-4bcb-900a-d49a0b268616",
+  "meta": {
+    "instanceId": "d2eba9b7c6c0250e60639a7089a5ff4f2cbf72512c7c874c8c41fc49090ca51d"
+  },
+  "id": "9myXHUfazE5A9Zwr",
+  "tags": []
+}

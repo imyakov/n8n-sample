@@ -1,0 +1,260 @@
+{
+  "name": "Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7b70a9e6-ea69-4a7d-a045-fb95086e909c",
+      "name": "Webhook",
+      "webhookId": "febaa08c-804d-4e11-83e5-207d66a754a3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a57ef6bd-6ead-4406-8c5d-46d46773d103",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Name, Age",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "9c968517-8cc6-41ac-b24f-d3a12fb10960",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b6c15c4d-b483-44cf-aaec-669f034ebd57",
+              "name": "Име",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "529f1143-b95b-42de-8e58-17c3b5560d3e",
+              "name": "Възраст",
+              "value": "={{ $json.Age }}",
+              "type": "string"
+            },
+            {
+              "id": "61db5155-63fb-4ba8-81e5-48da50d5dd7b",
+              "name": "Pesho",
+              "value": "={{ $json.Age }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        0
+      ],
+      "id": "d66c0387-d59b-4c16-a510-552732869ca4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bd8419dd-d174-4941-8ed0-dfd446f73875",
+              "leftValue": "={{ $json['Възраст'] }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "594b2377-5565-43b4-90f1-4effbc811f99",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Convert this to a comma separated list and only print me that list no other words or characters {{ $input.first().json['Име'] }} "
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1320,
+        0
+      ],
+      "id": "b534de35-5c3c-466f-b43e-afdc95992130",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmCohere",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        220
+      ],
+      "id": "107a8272-fe03-40d8-9ff6-bdf04ebd5dcb",
+      "name": "Cohere Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "Y3lCGEk4EJqmkdDC",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Име"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        0
+      ],
+      "id": "6f12c356-2ec8-47f2-a164-b46ebcd15a19",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6e98ba03-a83a-4e70-91b8-5b07e222e581",
+  "meta": {
+    "instanceId": "d2eba9b7c6c0250e60639a7089a5ff4f2cbf72512c7c874c8c41fc49090ca51d"
+  },
+  "id": "ncsSlDsvimQ7n7jE",
+  "tags": []
+}

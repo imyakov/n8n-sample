@@ -1,0 +1,147 @@
+{
+  "name": "Wikipedia /Bulgaria/Climate summary",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "37461061-b38b-4153-8d94-1cb18a2758ad",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://en.wikipedia.org/wiki/Bulgaria",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "cbe76034-b86f-423c-be18-f14a11e00a4e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "Climate",
+              "cssSelector": "#mw-content-text > div.mw-content-ltr.mw-parser-output > p:nth-child(68)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "5bb73ead-fe4d-4c75-b03f-67a5511c0bb4",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "54ffca4e-6d34-4809-bcf2-7ab9b25f7642",
+      "name": "Summarization Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmCohere",
+      "typeVersion": 1,
+      "position": [
+        760,
+        220
+      ],
+      "id": "4ec6b73c-41a8-47eb-9a95-b25af5ce2dc6",
+      "name": "Cohere Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "Y3lCGEk4EJqmkdDC",
+          "name": "CohereApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "68c40011-a329-48f2-96a7-76362573aa51",
+  "meta": {
+    "instanceId": "d2eba9b7c6c0250e60639a7089a5ff4f2cbf72512c7c874c8c41fc49090ca51d"
+  },
+  "id": "pgVPhdGPp8tVNhAl",
+  "tags": []
+}
